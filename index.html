@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahmed Alvin | Photography Portfolio</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* ADDED: Enables smooth scrolling when clicking anchor links like #gallery or #contact */
+        html {
+            scroll-behavior: smooth;
+        }
+        
         /* COFFEE THEME BASE STYLES */
         /* Color Palette: Cream (#f8f6f2), Rich Coffee (#70421c), Espresso (#382200) */
         body {
@@ -14,7 +18,6 @@
             background-color: #f8f6f2; /* Subtle, creamy light gray background (Foam/Milk) */
             color: #382200; /* Dark Espresso text color */
             line-height: 1.6;
-            scroll-behavior: smooth;
         }
         /* Custom Accent and Button Styles */
         .primary-accent {
@@ -37,11 +40,22 @@
             border: 1px solid #e5e7eb; 
             box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.08); 
         }
-        /* Style for the Avatar/Profile Image */
+        
+        /* CRITICAL FIX Attempt 5: Explicit CSS for Border and Shape */
         .avatar-frame {
-            border: 4px solid #70421c; /* Coffee Accent border */
-            box-shadow: 0 0 20px rgba(112, 66, 28, 0.3);
+            /* GUARANTEE the circular shape and prevent inner content spill */
+            border-radius: 50%; 
+            overflow: hidden; 
+            
+            border: none;
+            
+            /* Using ONLY box-shadow to create the layered circular border reliably: */
+            box-shadow: 
+                0 0 0 6px #ffffff, /* 6px White Ring (Inner) */
+                0 0 0 14px #70421c, /* 8px Coffee Ring (Outer, total 14px offset) */
+                0 10px 30px rgba(56, 34, 0, 0.4); /* Deep Shadow for lift */
         }
+        
         /* Overriding tailwind text color for dark text consistency */
         .text-gray-900 {
             color: #382200; /* Use rich espresso for headings */
@@ -50,13 +64,13 @@
         .tab-button {
             color: #70421c; /* Coffee Brown for inactive tabs */
         }
+        .tab-button:not(.active-tab):hover {
+            background-color: #f3e5d8; /* Light hover background */
+        }
         .active-tab {
             background-color: #70421c; /* Rich Coffee Brown background for active tab */
             color: white !important;
             box-shadow: 0 2px 8px rgba(112, 66, 28, 0.3);
-        }
-        .tab-button:not(.active-tab):hover {
-            background-color: #f3e5d8; /* Light hover background */
         }
         
         /* === ANIMATION STYLES === */
@@ -71,28 +85,82 @@
             animation: fadeIn 0.7s ease-out forwards;
             opacity: 0; /* Ensures elements start hidden */
         }
-
-        /* Hero Image specific animation (Scale-in) */
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
         .animate-scale-in {
             animation: scaleIn 0.8s ease-out forwards;
             opacity: 0;
             animation-delay: 0.3s; /* Delay the image slightly */
         }
-        /* END ANIMATION STYLES */
+        
+        /* CUSTOM CONTACT CARD STYLE */
+        .contact-info-card {
+            background-color: #ffffff; 
+            border-radius: 1rem; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+            transition: all 0.3s ease;
+            padding: 1.5rem; 
+            border: 1px solid #e8e8e8; 
+        }
+        .contact-info-card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); 
+            transform: translateY(-2px);
+        }
+        .contact-icon {
+            color: #70421c; /* Rich Coffee Brown for the icon */
+            stroke-width: 2.5;
+        }
+        /* Style for the Contact Section's inner card (Form and Info) */
+        .contact-form-block {
+            background-color: #ffffff; 
+            border-radius: 1.5rem; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); 
+            padding: 3rem;
+        }
+
+        /* === LIGHTBOX NAV ARROW STYLES === */
+        .lightbox-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 102; 
+            width: 56px; 
+            height: 56px;
+            background-color: #70421c; 
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .lightbox-nav-btn:hover {
+            opacity: 1;
+            background-color: #5a3617; 
+            transform: translateY(-50%) scale(1.05);
+        }
+        .lightbox-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: translateY(-50%) scale(1);
+            background-color: #70421c;
+        }
+        #prev-btn { left: 20px; }
+        #next-btn { right: 20px; }
+
+        /* Style for smooth image fading */
+        #lightbox-image {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 1;
+        }
     </style>
-    <!-- Include the Inter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Include the Inter font --><link href="https://fonts.googleapis.com/css2?family=Inter:wght400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body class="selection:bg-amber-200 selection:text-[#382200]">
 
-    <!-- Navigation Bar (White Background, subtle shadow) -->
-    <header class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center animate-fade-in" style="animation-delay: 0.1s;">
+    <!-- Navigation Bar (White Background, subtle shadow) --><header class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
+        <nav class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 flex justify-between items-center animate-fade-in" style="animation-delay: 0.1s;">
             <a href="#" class="text-2xl font-extrabold primary-accent tracking-tight">
                 Ahmed Alvin
             </a>
@@ -102,14 +170,12 @@
                 <a href="#gallery" class="text-gray-600 hover:primary-accent transition duration-300">Gallery</a>
                 <a href="#contact" class="text-gray-600 hover:primary-accent transition duration-300">Contact</a>
             </div>
-            <!-- Mobile Menu Button (Hamburger) -->
-            <button id="menu-button" class="md:hidden p-2 rounded-md text-[#382200] hover:bg-amber-50 transition duration-300">
+            <!-- Mobile Menu Button (Hamburger) --><button id="menu-button" class="md:hidden p-2 rounded-md text-[#382200] hover:bg-amber-50 transition duration-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
 
-        <!-- Mobile Menu (Hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 py-2">
+        <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 py-2">
             <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-amber-50 transition duration-300" onclick="document.getElementById('mobile-menu').classList.add('hidden')">About</a>
             <a href="#focus" class="block px-4 py-2 text-gray-800 hover:bg-amber-50 transition duration-300" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Focus</a>
             <a href="#gallery" class="block px-4 py-2 text-gray-800 hover:bg-amber-50 transition duration-300" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Gallery</a>
@@ -117,13 +183,10 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section (Introduction - Background matches the new body color) -->
-        <section id="hero" class="py-20 md:py-36 border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between text-center md:text-left">
-                <!-- Text Content -->
-                <div class="md:w-1/2 space-y-4 order-2 md:order-1 animate-fade-in" style="animation-delay: 0.2s;">
+    <!-- Main Content --><main>
+        <!-- Hero Section (Introduction - Background matches the new body color) --><section id="hero" class="py-20 md:py-36 border-b border-gray-200">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <!-- Text Content --><div class="md:w-1/2 space-y-4 order-2 md:order-1 animate-fade-in" style="animation-delay: 0.2s;">
                     <p class="text-lg primary-accent font-semibold uppercase tracking-widest">Photography Portfolio</p>
                     <h1 class="text-6xl md:text-8xl font-black text-gray-900 leading-tight tracking-tighter">
                         Ahmed Alvin
@@ -144,20 +207,22 @@
                     </div>
                 </div>
 
-                <!-- Avatar/Image: 1000038351.jpg -->
+                <!-- Avatar/Image with Frame (CRITICAL FIX applied here) -->
                 <div class="md:w-1/2 flex justify-center order-1 md:order-2 mb-10 md:mb-0 animate-scale-in">
-                    <div class="w-64 h-64 md:w-80 md:h-80 bg-gray-200 rounded-full flex items-center justify-center avatar-frame overflow-hidden">
-                        <img src="1000038351.jpg" 
+                    <!-- Container with rounded-full, overflow-hidden, and custom avatar-frame shadow -->
+                    <div class="w-64 h-64 md:w-80 md:h-80 rounded-full flex items-center justify-center avatar-frame">
+                        <!-- Image is guaranteed circular with rounded-full -->
+                        <img src="$RW7D85O.jpg" 
                              onerror="this.src='https://placehold.co/800x800/e5e7eb/70421c?text=Image+Missing';" 
-                             alt="Ahmed Alvin Profile Photo" class="w-full h-full object-cover">
+                             alt="Ahmed Alvin Profile Photo" 
+                             class="w-full h-full object-cover rounded-full">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- About Section (Uses pure white card for separation) -->
-        <section id="about" class="py-16 md:py-24 max-w-full mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
-            <div class="max-w-5xl mx-auto">
+        <!-- About Section (Uses pure white card for separation) --><section id="about" class="py-16 md:py-24 max-w-full mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
+            <div class="max-w-7xl mx-auto">
                 <h3 class="text-4xl font-extrabold text-gray-900 text-center mb-12">
                     About Me
                 </h3>
@@ -186,33 +251,28 @@
             </div>
         </section>
 
-        <!-- Focus Section (Containers are pure white for maximum pop on the creamy background) -->
-        <section id="focus" class="py-16 md:py-24 border-t border-b border-gray-200 animate-fade-in" style="animation-delay: 0.4s;">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Focus Section (Containers are pure white for maximum pop on the creamy background) --><section id="focus" class="py-16 md:py-24 border-t border-b border-gray-200 animate-fade-in" style="animation-delay: 0.4s;">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
                 <h3 class="text-4xl font-extrabold text-gray-900 text-center mb-12">
                     Areas of Focus
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <!-- Focus Card 1: Portraiture -->
-                    <div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.5s;">
+                    <!-- Focus Card 1: Portraiture --><div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.5s;">
                         <div class="text-4xl mb-2 text-gray-700">👤</div>
                         <p class="font-semibold text-gray-900">Portraiture</p>
                         <p class="text-sm text-gray-500">Developing skills in posing</p>
                     </div>
-                    <!-- Focus Card 2: Candid -->
-                    <div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.6s;">
+                    <!-- Focus Card 2: Candid --><div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.6s;">
                         <div class="text-4xl mb-2 text-gray-700">📸</div>
                         <p class="font-semibold text-gray-900">Candid</p>
                         <p class="text-sm text-gray-500">Capturing genuine moments</p>
                     </div>
-                    <!-- Focus Card 3: Landscape (Updated from Ocean/Beach) -->
-                    <div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.7s;">
+                    <!-- Focus Card 3: Landscape --><div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.7s;">
                         <div class="text-4xl mb-2 text-gray-700">🏞️</div>
                         <p class="font-semibold text-gray-900">Landscape</p>
                         <p class="text-sm text-gray-500">Capturing the natural scenery</p>
                     </div>
-                    <!-- Focus Card 4: Composition -->
-                    <div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.8s;">
+                    <!-- Focus Card 4: Composition --><div class="light-card p-6 rounded-xl text-center hover:scale-[1.02] transition duration-300 transform border-b-4 border-[#70421c] animate-fade-in" style="animation-delay: 0.8s;">
                         <div class="text-4xl mb-2 text-gray-700">🖼️</div>
                         <p class="font-semibold text-gray-900">Composition</p>
                         <p class="text-sm text-gray-500">Working on strong visual framing</p>
@@ -221,289 +281,455 @@
             </div>
         </section>
 
-        <!-- Gallery Section (Tabbed Interface) -->
-        <section id="gallery" class="py-16 md:py-24 border-t border-b border-gray-200 animate-fade-in" style="animation-delay: 0.9s;">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Gallery Section (Re-introducing tabs) --><section id="gallery" class="py-16 md:py-24 border-t border-b border-gray-200 animate-fade-in" style="animation-delay: 0.9s;">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
                 <h3 class="text-4xl font-extrabold text-gray-900 text-center mb-12">
-                    My Work Gallery
+                    My Work
                 </h3>
 
-                <!-- Tab Navigation -->
-                <div class="flex flex-wrap justify-center mb-10 light-card p-2 rounded-xl shadow-md space-x-2 md:space-x-4 animate-fade-in" style="animation-delay: 1.0s;">
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300 active-tab" data-target="tab-portraits">Portraits</button>
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300" data-target="tab-unnamed-1">Unnamed 1</button>
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300" data-target="tab-unnamed-2">Unnamed 2</button>
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300" data-target="tab-unnamed-3">Unnamed 3</button>
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300" data-target="tab-unnamed-4">Unnamed 4</button>
-                    <button class="tab-button p-3 px-4 md:px-6 rounded-lg text-sm md:text-base font-semibold transition duration-300" data-target="tab-unnamed-5">Unnamed 5</button>
+                <!-- Tab Buttons --><div class="flex justify-center space-x-4 mb-8">
+                    <button id="portraits-tab" class="tab-button active-tab px-6 py-2 rounded-xl text-lg font-semibold transition duration-300" data-target="tab-portraits">
+                        Portraits
+                    </button>
+                    <button id="landscape-tab" class="tab-button px-6 py-2 rounded-xl text-lg font-semibold transition duration-300" data-target="tab-landscape">
+                        Landscape
+                    </button>
                 </div>
+                <!-- Tab Content Containers --><div class="p-4 md:p-8 light-card rounded-xl">
+                    
+                    <!-- PORTRAITS TAB CONTENT --><div id="tab-portraits" class="tab-content">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                            
+                            <!-- Image 1: potrait-0.jpg (1 col) --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" onclick="openLightbox('potrait-0.jpg')">
+                                <img src="potrait-0.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Image+0';" 
+                                     alt="Portrait 0" 
+                                     class="w-full h-full object-cover">
+                            </div>
 
-                <!-- Tab Content Containers -->
-                <div id="gallery-content">
-                    <!-- 
-                        Tab 1: Portraits (NOW POPULATED with 5 uploaded images)
-                    -->
-                    <div id="tab-portraits" class="tab-content p-4 md:p-8 light-card rounded-xl">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            
-                            <!-- Image 1: potrait-1.jpg -->
-                            <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl" 
-                                 onclick="openLightbox('potrait-1.jpg', 'Gazing out into the distance.')">
-                                <img src="potrait-1.jpg" onerror="this.src='https://placehold.co/800x1200/f3e5d8/70421c?text=Portrait+1'" alt="Portrait Photo 1" class="w-full h-72 md:h-96 object-cover transition duration-300 group-hover:opacity-80">
-                                <!-- Overlay/Caption -->
-                                <div class="absolute inset-0 bg-black bg-opacity-20 flex items-end opacity-0 group-hover:opacity-100 transition duration-300">
-                                    <p class="text-white text-sm p-4 w-full bg-gradient-to-t from-black/50 to-transparent font-medium">View Detail</p>
-                                </div>
+                            <!-- Image 2: potrait-1.jpg (1 col) --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" onclick="openLightbox('potrait-1.jpg')">
+                                <img src="potrait-1.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Image+1';" 
+                                     alt="Portrait 1" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Image 3: potrait-2.jpg (1 col) - Ends Row 1 on Lg screens --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" onclick="openLightbox('potrait-2.jpg')">
+                                <img src="potrait-2.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Image+2';" 
+                                     alt="Portrait 2" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Image 4: potrait-3.jpg (1 col) - Starts Row 2 --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" onclick="openLightbox('potrait-3.jpg')">
+                                <img src="potrait-3.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Image+3';" 
+                                     alt="Portrait 3" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- IMAGE 5: potrait-4.jpg (2x2 BLOCK) --><div class="col-span-2 md:row-span-2 relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.01] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-4.jpg')">
+                                <img src="potrait-4.jpg" 
+                                     onerror="this.src='https://placehold.co/1200x1200/f3e5d8/70421c?text=Portrait+4+-+2X2+VIEW';" 
+                                     alt="Portrait 4 - 2x2 Block" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Image 6: potrait-15.jpg (1 col) - Note: This appears in the 3rd row, 1st column --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" onclick="openLightbox('potrait-15.jpg')">
+                                <img src="potrait-15.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Image+of+Horse+and+Girl';" 
+                                     alt="Horse and Girl Portrait" 
+                                     class="w-full h-full object-cover">
                             </div>
                             
-                            <!-- Image 2: yuna-waterfall.jpg -->
-                            <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl" 
-                                 onclick="openLightbox('yuna-waterfall.jpg', 'Yuna at the waterfall.')">
-                                <img src="yuna-waterfall.jpg" onerror="this.src='https://placehold.co/1200x800/f3e5d8/70421c?text=Portrait+2'" alt="Yuna Waterfall Photo" class="w-full h-72 md:h-96 object-cover transition duration-300 group-hover:opacity-80">
-                                <div class="absolute inset-0 bg-black bg-opacity-20 flex items-end opacity-0 group-hover:opacity-100 transition duration-300">
-                                    <p class="text-white text-sm p-4 w-full bg-gradient-to-t from-black/50 to-transparent font-medium">View Detail</p>
-                                </div>
+                        </div>
+                    </div>
+                    
+                    <!-- LANDSCAPE TAB CONTENT (NEW IMAGES ADDED) --><div id="tab-landscape" class="tab-content hidden">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                            
+                            <!-- New Image 1: potrait-12.jpg (Street Landscape) --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                onclick="openLightbox('potrait-12.jpg')">
+                                <img src="potrait-12.jpg" 
+                                    onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Street+Scene';" 
+                                    alt="Street Scene" 
+                                    class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- New Image 2: potrait-14.jpg (Cityscape/Hill View) --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-14.jpg')">
+                                <img src="potrait-14.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=High+View+Cityscape';" 
+                                     alt="High View Cityscape" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- New Image 3: potrait-13.jpg (Shaded Path) --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-13.jpg')">
+                                <img src="potrait-13.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Shaded+Tropical+Path';" 
+                                     alt="Shaded Tropical Path" 
+                                     class="w-full h-full object-cover">
                             </div>
                             
-                            <!-- Image 3: potrait-2.jpg -->
-                            <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl" 
-                                 onclick="openLightbox('potrait-2.jpg', 'Deep focus in the shadows.')">
-                                <img src="potrait-2.jpg" onerror="this.src='https://placehold.co/800x1200/f3e5d8/70421c?text=Portrait+3'" alt="Portrait Photo 2" class="w-full h-72 md:h-96 object-cover transition duration-300 group-hover:opacity-80">
-                                <div class="absolute inset-0 bg-black bg-opacity-20 flex items-end opacity-0 group-hover:opacity-100 transition duration-300">
-                                    <p class="text-white text-sm p-4 w-full bg-gradient-to-t from-black/50 to-transparent font-medium">View Detail</p>
-                                </div>
+                            <!-- Existing Image 1: potrait-10.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                onclick="openLightbox('potrait-10.jpg')">
+                                <img src="potrait-10.jpg" 
+                                    onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+1';" 
+                                    alt="Coastal Scene 1" 
+                                    class="w-full h-full object-cover">
                             </div>
                             
-                            <!-- Image 4: potrait-3.jpg -->
-                            <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl" 
-                                 onclick="openLightbox('potrait-3.jpg', 'Dramatic side-lighting.')">
-                                <img src="potrait-3.jpg" onerror="this.src='https://placehold.co/800x1200/f3e5d8/70421c?text=Portrait+4'" alt="Portrait Photo 3" class="w-full h-72 md:h-96 object-cover transition duration-300 group-hover:opacity-80">
-                                <div class="absolute inset-0 bg-black bg-opacity-20 flex items-end opacity-0 group-hover:opacity-100 transition duration-300">
-                                    <p class="text-white text-sm p-4 w-full bg-gradient-to-t from-black/50 to-transparent font-medium">View Detail</p>
-                                </div>
+                            <!-- Existing Image 2: potrait-9.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-9.jpg')">
+                                <img src="potrait-9.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+2';" 
+                                     alt="Coastal Scene 2" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Existing Image 3: potrait-8.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-8.jpg')">
+                                <img src="potrait-8.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+3';" 
+                                     alt="Coastal Scene 3" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Existing Image 4: potrait-6.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-6.jpg')">
+                                <img src="potrait-6.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+4';" 
+                                     alt="Coastal Scene 4" 
+                                     class="w-full h-full object-cover">
                             </div>
                             
-                            <!-- Image 5: potrait-4.jpg (Spans two columns on desktop for visual interest) -->
-                            <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transform transition duration-500 hover:scale-[1.03] hover:shadow-xl md:col-span-2" 
-                                 onclick="openLightbox('potrait-4.jpg', 'Natural light studio portrait.')">
-                                <img src="potrait-4.jpg" onerror="this.src='https://placehold.co/1600x800/f3e5d8/70421c?text=Portrait+5'" alt="Portrait Photo 4" class="w-full h-72 md:h-96 object-cover transition duration-300 group-hover:opacity-80">
-                                <div class="absolute inset-0 bg-black bg-opacity-20 flex items-end opacity-0 group-hover:opacity-100 transition duration-300">
-                                    <p class="text-white text-sm p-4 w-full bg-gradient-to-t from-black/50 to-transparent font-medium">View Detail</p>
-                                </div>
+                            <!-- Existing Image 5: potrait-5.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-5.jpg')">
+                                <img src="potrait-5.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+5';" 
+                                     alt="Coastal Scene 5" 
+                                     class="w-full h-full object-cover">
+                            </div>
+                            
+                            <!-- Existing Image 6: potrait-11.jpg --><div class="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.03] cursor-pointer aspect-square" 
+                                 onclick="openLightbox('potrait-11.jpg')">
+                                <img src="potrait-11.jpg" 
+                                     onerror="this.src='https://placehold.co/600x600/f3e5d8/70421c?text=Landscape+Image+6';" 
+                                     alt="Coastal Scene 6" 
+                                     class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- NEW IMAGE (potrait-7.jpg) - Spans all 3 columns (1x3 visual effect) --><div class="col-span-full relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.01] cursor-pointer aspect-[3/1]" 
+                                 onclick="openLightbox('potrait-7.jpg')">
+                                <img src="potrait-7.jpg" 
+                                     onerror="this.src='https://placehold.co/1200x400/f3e5d8/70421c?text=Full+Width+Image+7';" 
+                                     alt="Wildlife: Monkey in Grass" 
+                                     class="w-full h-full object-cover">
                             </div>
 
                         </div>
                     </div>
 
-                    <!-- Tab 2: Unnamed 1 -->
-                    <div id="tab-unnamed-1" class="tab-content hidden flex justify-center items-center p-12 light-card rounded-xl min-h-[300px]">
-                        <p class="text-2xl text-gray-500 font-semibold">Content Coming Soon...</p>
-                    </div>
-                    
-                    <!-- Tab 3: Unnamed 2 -->
-                    <div id="tab-unnamed-2" class="tab-content hidden flex justify-center items-center p-12 light-card rounded-xl min-h-[300px]">
-                        <p class="text-2xl text-gray-500 font-semibold">Content Coming Soon...</p>
-                    </div>
-
-                    <!-- Tab 4: Unnamed 3 -->
-                    <div id="tab-unnamed-3" class="tab-content hidden flex justify-center items-center p-12 light-card rounded-xl min-h-[300px]">
-                        <p class="text-2xl text-gray-500 font-semibold">Content Coming Soon...</p>
-                    </div>
-
-                    <!-- Tab 5: Unnamed 4 -->
-                    <div id="tab-unnamed-4" class="tab-content hidden flex justify-center items-center p-12 light-card rounded-xl min-h-[300px]">
-                        <p class="text-2xl text-gray-500 font-semibold">Content Coming Soon...</p>
-                    </div>
-                    
-                    <!-- Tab 6: Unnamed 5 -->
-                    <div id="tab-unnamed-5" class="tab-content hidden flex justify-center items-center p-12 light-card rounded-xl min-h-[300px]">
-                        <p class="text-2xl text-gray-500 font-semibold">Content Coming Soon...</p>
-                    </div>
-
                 </div>
+
             </div>
         </section>
 
 
-        <!-- Contact Section (Now focused only on displaying contact info) -->
-        <section id="contact" class="py-16 md:py-24 border-t border-gray-200 animate-fade-in" style="animation-delay: 1.4s;">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h3 class="text-4xl font-extrabold text-gray-900 mb-6">
-                    Connect With Me
-                </h3>
-                <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-                    Reach out directly via email or Instagram for collaborations.
+        <!-- Contact Section --><section id="contact" class="py-24 md:py-36 bg-[#382200] text-white animate-fade-in" style="animation-delay: 1.4s;">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                
+                <!-- HEADING AND INTRO TEXT -->
+                <h3 class="text-5xl md:text-6xl font-black mb-4">Let's Connect</h3>
+                <p class="text-xl font-light text-gray-300 max-w-2xl mx-auto mb-16">
+                    Ready to capture your next moment? Send a message and let's start the conversation about your project or collaboration idea.
                 </p>
 
-                <!-- Direct Contact Information -->
-                <div class="flex flex-col sm:flex-row justify-center space-y-6 sm:space-y-0 sm:space-x-12 mt-12 text-gray-600 font-medium">
+                <!-- FORM AND CONTACT INFO BLOCK (Prominent White Card) -->
+                <div class="contact-form-block mx-auto">
                     
-                    <!-- Email Link -->
-                    <div class="p-6 light-card rounded-xl hover:shadow-md transition duration-300 hover:scale-[1.05] hover:border-[#70421c]">
-                        <a href="mailto:alvinimad15@gmail.com" class="hover:text-gray-900 transition duration-300 flex items-center justify-center">
-                            <svg class="w-6 h-6 mr-2 primary-accent" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                            </svg>
-                            <span class="text-lg">alvinimad15@gmail.com</span>
-                        </a>
-                    </div>
-
-                    <!-- Instagram Link -->
-                    <div class="p-6 light-card rounded-xl hover:shadow-md transition duration-300 hover:scale-[1.05] hover:border-[#70421c]">
-                        <a href="https://instagram.com/alvnnn.n" target="_blank" class="hover:text-gray-900 transition duration-300 flex items-center justify-center">
-                            <svg class="w-6 h-6 mr-2 primary-accent" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.5" y1="6.5" y2="6.5"/>
-                            </svg>
-                            <span class="text-lg">@alvnnn.n (Instagram)</span>
-                        </a>
+                    <!-- Form -->
+                    <form class="grid grid-cols-1 gap-6 text-left text-gray-700">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your Name"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#70421c] focus:border-[#70421c] transition duration-150">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="you@example.com"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#70421c] focus:border-[#70421c] transition duration-150">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message / Project Details</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Tell me about your photography needs or collaboration idea..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#70421c] focus:border-[#70421c] transition duration-150"></textarea>
+                        </div>
+                        <button type="submit" class="primary-btn px-6 py-3 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 text-lg mt-4">
+                            Send Message
+                        </button>
+                    </form>
+                
+                    <!-- Contact Info Grid (Below the form, separated by a line) -->
+                    <div class="pt-10 mt-10 border-t border-gray-200">
+                        <h4 class="text-xl font-bold text-gray-900 mb-6">Or Reach Me Directly</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <!-- Card 1: Email -->
+                            <div class="contact-info-card">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="contact-icon mx-auto mb-2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <p class="font-bold text-gray-900">Email Me</p>
+                                <p class="text-gray-600 text-sm">ahmed.alvin@example.com</p>
+                            </div>
+                            <!-- Card 2: Phone -->
+                            <div class="contact-info-card">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="contact-icon mx-auto mb-2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.08 2h3a2 2 0 0 1 2 1.72 17.5 17.5 0 0 0 .58 2.87 2 2 0 0 1-.32 2.04l-.15.15a.5.5 0 0 0-.15.35c-.13.36-.61 1.76.71 3.08l1.79 1.79 3.08.71c.36.13.75.13 1.11 0l.2-.05a.5.5 0 0 0 .3-.15l.15-.15a2 2 0 0 1 2.04-.32 17.5 17.5 0 0 0 2.87.58 2 2 0 0 1 1.72 2z"></path></svg>
+                                <p class="font-bold text-gray-900">Call Me</p>
+                                <p class="text-gray-600 text-sm">+960 777-1234 (Maldives)</p>
+                            </div>
+                            <!-- Card 3: Location -->
+                            <div class="contact-info-card">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="contact-icon mx-auto mb-2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"></path></svg>
+                                <p class="font-bold text-gray-900">Visit Me</p>
+                                <p class="text-gray-600 text-sm">Hulhumalé, Maldives</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white py-6 border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            <p>&copy; 2025 Ahmed Alvin. Photography Portfolio. All rights reserved.</p>
-        </div>
-    </footer>
-    
-    <!-- Lightbox Modal (Hidden by default) -->
-    <div id="lightbox" class="fixed inset-0 z-[100] hidden bg-black bg-opacity-90 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" onclick="closeLightbox()">
-        <!-- Container to stop event propagation on image click -->
-        <div class="max-w-7xl w-full mx-auto" onclick="event.stopPropagation()">
-            
-            <!-- Close Button -->
-            <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-4xl font-light opacity-80 hover:opacity-100 transition duration-300 z-[101]">
-                &times;
-            </button>
-
-            <!-- Image Container -->
-            <div class="bg-white rounded-lg overflow-hidden shadow-2xl">
-                <img id="lightbox-image" src="" alt="Gallery Image" class="w-full max-h-[85vh] object-contain mx-auto">
-                <div id="lightbox-caption" class="p-4 text-center bg-[#382200] text-white text-lg font-medium"></div>
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center text-gray-600">
+            <p>&copy; 2025 Ahmed Alvin Photography. All rights reserved.</p>
+            <div class="mt-2 space-x-4">
+                <a href="#" class="text-gray-600 hover:primary-accent transition duration-300">Privacy Policy</a>
+                <span class="text-gray-400">|</span>
+                <a href="#" class="text-gray-600 hover:primary-accent transition duration-300">Terms of Service</a>
             </div>
         </div>
-    </div>
+    </footer>
 
+    <!-- LIGHTBOX MODAL (Gallery Image Viewer) -->
+    <div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black bg-opacity-90 transition-opacity duration-300" onclick="closeLightbox(event)">
+        
+        <!-- Close Button -->
+        <button id="close-lightbox-btn" class="absolute top-4 right-4 text-white p-3 rounded-full bg-black/50 hover:bg-black/80 transition duration-200 z-[103]">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
+        <!-- Previous Button -->
+        <button id="prev-btn" class="lightbox-nav-btn" disabled>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+
+        <!-- Image Container -->
+        <div class="relative max-w-5xl max-h-[90vh] mx-auto p-4 md:p-8" onclick="event.stopPropagation()">
+            <img id="lightbox-image" src="" alt="Gallery Image" class="max-w-full max-h-full rounded-xl shadow-2xl object-contain">
+        </div>
+
+        <!-- Next Button -->
+        <button id="next-btn" class="lightbox-nav-btn">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
 
     <!-- JavaScript for Interactivity -->
     <script>
-        // --- Lightbox Functions ---
-        function openLightbox(src, caption) {
-            const lightbox = document.getElementById('lightbox');
-            const img = document.getElementById('lightbox-image');
-            const cap = document.getElementById('lightbox-caption');
+        // --- Global State and Data ---
+        const galleryImages = {
+            'tab-portraits': [
+                'potrait-0.jpg', 
+                'potrait-1.jpg', 
+                'potrait-2.jpg', 
+                'potrait-3.jpg', 
+                'potrait-4.jpg', 
+                'potrait-15.jpg'
+            ],
+            'tab-landscape': [
+                'potrait-12.jpg', 
+                'potrait-14.jpg', 
+                'potrait-13.jpg', 
+                'potrait-10.jpg', 
+                'potrait-9.jpg', 
+                'potrait-8.jpg', 
+                'potrait-6.jpg', 
+                'potrait-5.jpg', 
+                'potrait-11.jpg',
+                'potrait-7.jpg' 
+            ]
+        };
+        let currentImageIndex = -1;
+        let currentTabId = 'tab-portraits';
 
-            img.src = src;
-            cap.textContent = caption;
-            // Ensure lightbox is flex for visibility and transition
-            lightbox.classList.remove('hidden', 'opacity-0');
-            lightbox.classList.add('flex', 'opacity-100');
-        }
+        // --- Utility Functions ---
 
-        function closeLightbox() {
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('opacity-100', 'flex');
-            // Add transition delay before hiding completely
-            setTimeout(() => {
-                lightbox.classList.add('hidden', 'opacity-0');
-            }, 300); // Wait for opacity transition
-        }
-
-        // --- Tab Switching Logic ---
-        function switchTab(targetId) {
-            // 1. Deactivate all tab buttons
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active-tab');
-            });
-
-            // 2. Hide all tab content
+        /**
+         * Switches the active gallery tab content.
+         * @param {string} targetTabId - The ID of the tab content to show (e.g., 'tab-portraits').
+         */
+        function switchTab(targetTabId) {
+            currentTabId = targetTabId;
+            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.add('hidden');
             });
 
-            // 3. Activate the clicked button
-            const newActiveButton = document.querySelector(`[data-target="${targetId}"]`);
-            if (newActiveButton) {
-                newActiveButton.classList.add('active-tab');
-            }
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active-tab');
+            });
 
-            // 4. Show the target content
-            const targetContent = document.getElementById(targetId);
+            // Show the target content
+            const targetContent = document.getElementById(targetTabId);
             if (targetContent) {
                 targetContent.classList.remove('hidden');
-                // Scroll to the content if on mobile
-                if (window.innerWidth < 768) { 
-                    targetContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+            }
+
+            // Activate the corresponding button
+            document.querySelector(`[data-target="${targetTabId}"]`).classList.add('active-tab');
+        }
+
+
+        /**
+         * Opens the lightbox modal with the specified image.
+         * @param {string} imageName - The file name of the image to display.
+         */
+        function openLightbox(imageName) {
+            const lightbox = document.getElementById('lightbox');
+            const imgElement = document.getElementById('lightbox-image');
+            const images = galleryImages[currentTabId];
+
+            currentImageIndex = images.findIndex(name => name === imageName);
+            
+            imgElement.src = imageName;
+            imgElement.onerror = () => imgElement.src = `https://placehold.co/1200x800/e5e7eb/70421c?text=Image+Missing`;
+            
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            
+            updateLightboxNavigation();
+        }
+
+        /**
+         * Navigates to the next or previous image in the current tab's list.
+         * @param {number} direction - 1 for next, -1 for previous.
+         */
+        function navigateLightbox(direction) {
+            const images = galleryImages[currentTabId];
+            let newIndex = currentImageIndex + direction;
+
+            if (newIndex >= 0 && newIndex < images.length) {
+                currentImageIndex = newIndex;
+                const imgElement = document.getElementById('lightbox-image');
+                
+                // Add class to fade out
+                imgElement.classList.remove('opacity-100');
+                imgElement.classList.add('opacity-0');
+
+                // Wait for fade-out, change src, then fade in
+                setTimeout(() => {
+                    imgElement.src = images[currentImageIndex];
+                    imgElement.classList.remove('opacity-0');
+                    imgElement.classList.add('opacity-100');
+                    updateLightboxNavigation();
+                }, 300); // Match CSS transition duration
             }
         }
         
-        // --- Animation Observer ---
-        // Sets up an Intersection Observer to trigger animations when elements enter the viewport
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Trigger the animation by removing the initial 'opacity: 0' state 
-                    // (The animation is already defined with 'forwards' and the style attribute holds the delay)
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            root: null, // viewport
-            rootMargin: '0px',
-            threshold: 0.1 // Trigger when 10% of element is visible
-        });
-        
-        // --- Event Listeners and Initial Setup ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Mobile Menu Toggle
-            document.getElementById('menu-button').addEventListener('click', function() {
-                document.getElementById('mobile-menu').classList.toggle('hidden');
-            });
+        /**
+         * Updates the disabled state of the navigation buttons in the lightbox.
+         */
+        function updateLightboxNavigation() {
+            const images = galleryImages[currentTabId];
+            document.getElementById('prev-btn').disabled = currentImageIndex <= 0;
+            document.getElementById('next-btn').disabled = currentImageIndex >= images.length - 1;
+        }
 
-            // 2. Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    // Ensure the menu is closed when an item is clicked on mobile
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                    
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-            // 3. Tab Button Click Handlers
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    switchTab(this.dataset.target);
-                });
-            });
-            
-            // 4. Close lightbox on ESC key press
-            document.addEventListener('keydown', function(e) {
+        /**
+         * Closes the lightbox modal.
+         * @param {Event} event - The click event (optional).
+         */
+        function closeLightbox(event) {
+            // Only close if click is directly on the backdrop or the close button
+            if (!event || event.target.id === 'lightbox' || event.target.closest('#close-lightbox-btn')) {
                 const lightbox = document.getElementById('lightbox');
-                if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
-                    closeLightbox();
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = ''; // Restore scrolling
+                currentImageIndex = -1;
+            }
+        }
+
+        // --- Event Listeners and Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Observer for fade-in animation
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '0px',
+                threshold: 0.1 // Triggers when 10% of the item is visible
+            });
+
+            // 1. Mobile Menu Toggle
+            const menuButton = document.getElementById('menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // 2. Tab Switching Logic
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.getAttribute('data-target');
+                    switchTab(target);
+                });
+            });
+
+            // 3. Initialize Animations for elements with .animate-fade-in
+            const animatedElements = document.querySelectorAll('.animate-fade-in');
+            animatedElements.forEach(el => observer.observe(el));
+            
+            // 4. Lightbox Navigation Buttons
+            document.getElementById('prev-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateLightbox(-1);
+            });
+            document.getElementById('next-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateLightbox(1);
+            });
+
+            // 5. Keyboard Navigation for Lightbox (Optional, but good UX)
+            document.addEventListener('keydown', (e) => {
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox.classList.contains('flex')) {
+                    if (e.key === 'ArrowRight') {
+                        navigateLightbox(1);
+                    } else if (e.key === 'ArrowLeft') {
+                        navigateLightbox(-1);
+                    } else if (e.key === 'Escape') {
+                        closeLightbox();
+                    }
                 }
             });
-
-            // 5. Apply Intersection Observer to all elements with 'animate-fade-in' or 'animate-scale-in'
-            document.querySelectorAll('.animate-fade-in, .animate-scale-in').forEach(element => {
-                observer.observe(element);
-            });
-
-            // Set the initial active tab (Portraits)
-            switchTab('tab-portraits');
         });
     </script>
 </body>
